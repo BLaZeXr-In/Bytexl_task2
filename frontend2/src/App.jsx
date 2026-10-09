@@ -21,6 +21,9 @@ function App() {
     });
     const data = await response.json();
     setResult(data);
+    setName("");
+    setAge("");
+    setMark("");
   };
 
   return (
