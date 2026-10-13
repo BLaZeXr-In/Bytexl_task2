@@ -82,13 +82,34 @@ app.post("/students2", (req, res) => {
     });
 });
 
-app.get("/", (req, res) => {
-    res.send("Student API is working");
-});
+const path = require("path");
+const fs = require("fs");
 
 app.get("/health", (req, res) => {
     res.json({ status: "healthy", timestamp: new Date().toISOString() });
 });
+
+// Serve frontend static build if available (unified full-stack deployment)
+const publicPath = fs.existsSync(path.join(__dirname, "public"))
+    ? path.join(__dirname, "public")
+    : path.join(__dirname, "../frontend2/dist");
+
+if (fs.existsSync(publicPath)) {
+    console.log(`Serving frontend static build from: ${publicPath}`);
+    app.use(express.static(publicPath));
+    app.get("*", (req, res, next) => {
+        if (req.path.startsWith("/students2") || req.path === "/health") {
+            return next();
+        }
+        res.sendFile(path.join(publicPath, "index.html"), (err) => {
+            if (err) next();
+        });
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("Student API is working");
+    });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

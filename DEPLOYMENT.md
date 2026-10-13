@@ -74,14 +74,60 @@ Because GitHub Pages only hosts static frontend files, your Node.js + MySQL back
 
 ---
 
-## 4. Deploying with Docker Compose (Local or VPS)
+## 4. All-in-One Cloud Deployment on Railway.app (Frontend + Backend + Private Database)
 
-You can run the entire full stack (MySQL + Backend + Auto-migration) with Docker:
+Railway allows you to run MySQL and the App together in the same project without managing cloud database networking:
+1. Go to [railway.app](https://railway.app) and log in with GitHub.
+2. Click **New Project** -> **Provision MySQL**.
+3. In the same project, click **+ New** -> **GitHub Repo** -> select `Bytexl_task2`.
+4. Railway will automatically detect the root `Dockerfile` (which builds both React frontend and Node backend).
+5. Add the database environment variables in the App service settings by referencing the MySQL plugin:
+   - `DB_HOST`: `${{MySQL.MYSQLHOST}}`
+   - `DB_PORT`: `${{MySQL.MYSQLPORT}}`
+   - `DB_USER`: `${{MySQL.MYSQLUSER}}`
+   - `DB_PASSWORD`: `${{MySQL.MYSQLPASSWORD}}`
+   - `DB_NAME`: `${{MySQL.MYSQLDATABASE}}`
+6. Click **Generate Domain** under **Networking**.
+7. Your full-stack app is instantly live with a public HTTPS URL accessible from anywhere in the world!
+
+---
+
+## 5. Instant Global Access for Local Container (Cloudflare Tunnel / Localtunnel)
+
+If you run the app and MySQL in Docker on your machine and want to make it **accessible from anywhere in the world** with a live public HTTPS URL immediately without paying for any cloud hosting:
+
+1. Start the stack locally:
+   ```bash
+   docker compose up --build -d
+   ```
+2. Expose port `5000` to the internet instantly using one of these free tools:
+
+   **Using Free Cloudflare Tunnel (No account required):**
+   ```bash
+   cloudflared tunnel --url http://localhost:5000
+   ```
+
+   **OR Using Pinggy (Zero installation, works on any terminal):**
+   ```bash
+   ssh -p 443 -R0:localhost:5000 a.pinggy.io
+   ```
+
+   **OR Using Localtunnel:**
+   ```bash
+   npx localtunnel --port 5000
+   ```
+
+3. You will immediately get a live public HTTPS URL (e.g., `https://xyz.trycloudflare.com` or `https://xyz.a.pinggy.link`).
+4. Anyone in the world on mobile or desktop can access the full React UI and submit data to the container's MySQL database!
+
+---
+
+## 6. Docker Compose Stack Details
 
 ```bash
 docker compose up --build -d
 ```
-
-- MySQL will run on port `3306`.
-- Backend will run on `http://localhost:5000`.
-- Health checks ensure MySQL is ready before the backend starts.
+- App container (React + Express) listens on `http://localhost:5000`.
+- MySQL runs on port `3306` with volume persistence (`mysql_data`).
+- Automatically initializes table via [backend2/schema.sql](backend2/schema.sql).
+- To stop the containers: `docker compose down`.
