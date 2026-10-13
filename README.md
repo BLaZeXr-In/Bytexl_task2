@@ -31,3 +31,13 @@ CREATE TABLE students2 (
     mark INT,
     cgpa DECIMAL(3,2)
 );
+
+## Deployment & CI/CD
+
+Automated deployment and testing are configured using **GitHub Actions**:
+
+- **Frontend Deployment (GitHub Pages)**: [`.github/workflows/deploy-frontend.yml`](.github/workflows/deploy-frontend.yml)
+- **CI Build & Lint Pipeline**: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+- **Backend Docker & Cloud Webhook**: [`.github/workflows/deploy-backend.yml`](.github/workflows/deploy-backend.yml)
+
+For full deployment instructions (GitHub Pages, Render, Railway, Docker), see [DEPLOYMENT.md](DEPLOYMENT.md).
